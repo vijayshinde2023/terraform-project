@@ -42,3 +42,13 @@ variable "certificate_id" {
 variable "docker_image" {
   type = string
 }
+
+variable "app_insights_instrumentation_key" {
+  description = "Instrumentation Key for Application Insights"
+  type        = string
+}
+
+variable "app_insights_connection_string" {
+  description = "Connection String for Application Insights"
+  type        = string
+}

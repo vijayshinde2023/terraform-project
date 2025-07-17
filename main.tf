@@ -81,6 +81,9 @@ module "linux_web_app" {
   docker_image        = var.docker_image
   custom_domain       = "yourdomain.com"
   certificate_id      = azurerm_app_service_certificate.ssl_cert.id
+  app_insights_instrumentation_key     = module.app_insights.instrumentation_key
+  app_insights_connection_string       = module.app_insights.connection_string
+
 
   app_settings = {
     DB_HOST = module.mysql.fqdn
@@ -88,4 +91,30 @@ module "linux_web_app" {
     DB_PASS = module.mysql.admin_password
     DB_NAME = module.mysql.db_name
   }
+}
+
+
+module "app_insights" {
+  source              = "./modules/app_insights"
+  name                = var.web_app_name
+  resource_prefix     = var.resource_prefix
+  location            = var.location
+  resource_group_name = module.resource_group.name
+}
+
+
+module "log_analytics" {
+  source              = "./modules/log_analytics"
+  name                = var.web_app_name
+  resource_prefix     = var.resource_prefix
+  location            = var.location
+  resource_group_name = module.resource_group.name
+}
+
+module "storage_account" {
+  source              = "./modules/storage_account"
+  name                = var.web_app_name
+  resource_prefix     = var.resource_prefix
+  location            = var.location
+  resource_group_name = module.resource_group.name
 }

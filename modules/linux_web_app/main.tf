@@ -23,15 +23,18 @@ resource "azurerm_linux_web_app" "this" {
   # App settings (merged with custom values passed from root)
   app_settings = merge(
     {
-      WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
+      WEBSITES_ENABLE_APP_SERVICE_STORAGE   = "false"
+      APPINSIGHTS_INSTRUMENTATIONKEY        = var.app_insights_instrumentation_key
+      APPLICATIONINSIGHTS_CONNECTION_STRING = var.app_insights_connection_string
     },
-    var.app_settings
+    var.app_settings,
+
   )
 }
 
 # Bind a custom domain to the app
 resource "azurerm_app_service_custom_hostname_binding" "custom_domain" {
-  hostname            = var.custom_domain              # e.g., app.mydomain.com
+  hostname            = var.custom_domain # e.g., app.mydomain.com
   app_service_name    = azurerm_linux_web_app.this.name
   resource_group_name = var.resource_group_name
 }
@@ -39,6 +42,6 @@ resource "azurerm_app_service_custom_hostname_binding" "custom_domain" {
 # Attach an SSL certificate to the custom domain
 resource "azurerm_app_service_certificate_binding" "ssl_binding" {
   hostname_binding_id = azurerm_app_service_custom_hostname_binding.custom_domain.id
-  certificate_id      = var.certificate_id             # passed from root module
+  certificate_id      = var.certificate_id # passed from root module
   ssl_state           = "SniEnabled"
 }
